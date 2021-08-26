@@ -1,0 +1,1 @@
+package github.churchtao.structor.composite;
