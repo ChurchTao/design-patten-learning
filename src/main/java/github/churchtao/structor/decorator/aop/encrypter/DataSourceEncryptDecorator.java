@@ -12,17 +12,14 @@ public class DataSourceEncryptDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public String readData() {
-        String read = wrapDataSource.readData();
-        String out = new String(Base64.getDecoder().decode(read));
-        return out;
-//        return wrapDataSource.readData();
+    public byte[] readData() {
+        byte[] read = wrapDataSource.readData();
+        return Base64.getDecoder().decode(read);
     }
 
     @Override
-    public void writeData(String data) {
-        String based = new String(Base64.getEncoder().encode(data.getBytes()));
+    public void writeData(byte[] data) {
+        byte[] based = Base64.getEncoder().encode(data);
         wrapDataSource.writeData(based);
-//        wrapDataSource.writeData(data);
     }
 }

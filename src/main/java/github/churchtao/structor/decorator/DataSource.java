@@ -2,8 +2,8 @@ package github.churchtao.structor.decorator;
 
 public interface DataSource {
 
-    String readData();
+    byte[] readData();
 
-    void writeData(String data);
+    void writeData(byte[] data);
 
 }

@@ -1,9 +1,10 @@
 package github.churchtao.structor.decorator;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
 
-public class FileDataSource implements DataSource{
+public final class FileDataSource implements DataSource{
 
     private String filename;
 
@@ -15,29 +16,39 @@ public class FileDataSource implements DataSource{
     }
 
     @Override
-    public String readData() {
+    public byte[] readData() {
+        FileChannel fc = null;
         try {
-            StringBuilder builder = new StringBuilder();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(this.file)));
-            String line = bufferedReader.readLine();
-            while (line!=null){
-                builder.append(line);
-                line = bufferedReader.readLine();
+            fc = new RandomAccessFile(filename, "r").getChannel();
+            MappedByteBuffer byteBuffer = fc.map(FileChannel.MapMode.READ_ONLY, 0,
+                    fc.size()).load();
+            System.out.println(byteBuffer.isLoaded());
+            byte[] result = new byte[(int) fc.size()];
+            if (byteBuffer.remaining() > 0) {
+                byteBuffer.get(result, 0, byteBuffer.remaining());
             }
-            bufferedReader.close();
-            return builder.toString();
-        } catch (Exception e) {
+            return result;
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            if (fc!=null){
+                try {
+                    fc.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        return "null";
+        return null;
     }
 
     @Override
-    public void writeData(String data) {
+    public void writeData(byte[] data) {
         try {
-            PrintWriter fileWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file))));
-            fileWriter.write(data);
-            fileWriter.close();
+            File f = this.file;
+            FileOutputStream fos = new FileOutputStream(f);
+            fos.write(data);
+            fos.close();
         } catch (Exception e) {
             e.printStackTrace();
         }

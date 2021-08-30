@@ -4,8 +4,6 @@ import github.churchtao.structor.decorator.DataSource;
 import github.churchtao.structor.decorator.aop.DataSourceDecorator;
 
 import java.io.ByteArrayOutputStream;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
@@ -16,22 +14,21 @@ public class DataSourceCompressDecorator extends DataSourceDecorator {
     }
 
     @Override
-    public String readData() {
-        String out = wrapDataSource.readData();
+    public byte[] readData() {
+        byte[] out = wrapDataSource.readData();
         try {
-            byte[] unCompressData =  uncompress(out.getBytes());
-            return new String(unCompressData);
+            return uncompress(out);
         } catch (DataFormatException e) {
             e.printStackTrace();
         }
-        return "null";
+        return null;
     }
 
 
     @Override
-    public void writeData(String data) {
-        byte[] compressData = compress(data.getBytes());
-        wrapDataSource.writeData(new String(compressData));
+    public void writeData(byte[] data) {
+        byte[] compressData = compress(data);
+        wrapDataSource.writeData(compressData);
     }
 
 

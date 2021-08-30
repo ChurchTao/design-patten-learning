@@ -8,11 +8,10 @@ public class DecoratorMain {
     public static void main(String[] args) {
         DataSource dataSource = new FileDataSource("/Users/church/Desktop/data.txt");
         dataSource = new DataSourceEncryptDecorator(dataSource);
-//        dataSource = new DataSourceCompressDecorator(dataSource);
-        String out = dataSource.readData();
+        dataSource = new DataSourceCompressDecorator(dataSource);
+        byte[] data = dataSource.readData();
+        String out = new String(data);
         System.out.println(out);
-        dataSource.writeData("tjc159753");
-        String out2 = dataSource.readData();
-        System.out.println(out2);
+//        dataSource.writeData("tjc159753".getBytes());
     }
 }
